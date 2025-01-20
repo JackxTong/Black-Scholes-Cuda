@@ -44,7 +44,7 @@ class GBM:
         if self.paths is None:
             raise RuntimeError("Paths have to be simulated first")
 
-        plt.figure(figsize=(10,6), constrained_layout=True)
+        plt.figure(figsize=(8,4), constrained_layout=True)
         plt.plot(self.paths.cpu().numpy().T)
         plt.grid()
         plt.title('Geometric Brownian motion with mu={}, sigma={}'.format(self.mu, self.sigma))
@@ -74,14 +74,14 @@ class Option(GBM):
         if self.paths is None:
             raise RuntimeError("Paths have to be simulated first")
         if self.n_paths > 10000:
-            print("Too many paths to plot. Plotting first 10000 paths")
-            plt.figure(figsize=(10,6), constrained_layout=True)
-            plt.plot(self.paths[:10000].detach().cpu().numpy().T)
+            print("Too many paths to plot. Plotting first 1000 paths")
+            plt.figure(figsize=(8,4), constrained_layout=True)
+            plt.plot(self.paths[:1000].detach().cpu().numpy().T)
             plt.grid()
             plt.title('Geometric Brownian motion with mu={}, sigma={}'.format(self.mu, self.sigma))
             plt.show()
         else:
-            plt.figure(figsize=(10,6), constrained_layout=True)
+            plt.figure(figsize=(8,4), constrained_layout=True)
             plt.plot(self.paths.detach().cpu().numpy().T)
             plt.grid()
             plt.title('Geometric Brownian motion with mu={}, sigma={}'.format(self.mu, self.sigma))
@@ -201,4 +201,8 @@ class Option(GBM):
         # Plot the errors
         plt.figure(figsize=(8, 4))
         plt.plot(n_paths_values, errors, marker='o', linestyle='-')
+        plt.grid(True)
+        plt.xlabel('Number of Paths')
+        plt.ylabel('Relative Error')
+        plt.title(f'Convergence of MC Delta to BS Delta for {self.type} option')
         plt.xscale('log')
