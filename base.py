@@ -52,16 +52,15 @@ class GBM:
 
 class Option(GBM):
 
-    def __init__(self, mu, sigma, s0=1.0, strike = 1.0, dt=0.01, n_paths=1000, option_type = 'Call', device='cuda'):
-
-        super().__init__(mu, sigma, dt=dt, device=device, n_paths=n_paths)
+    def __init__(self, mu, sigma, s0=1.0, strike = 1.0, T = 1.0, dt=0.01, n_paths=1000, option_type = 'Call', device='cuda'):
+        mu, sigma, s0, dt, T = map(float, (mu, sigma, s0, dt, T))
+        super().__init__(mu, sigma, dt=dt, device=device, n_paths=n_paths, T=T)
         if s0 < 0:
             raise ValueError("Initial asset price must be positive")
         if strike < 0:
             raise ValueError("Strike price must be positive")
         if option_type not in ['Call', 'Put']:
             raise ValueError("Option type must be either 'Call' or 'Put'")
-        
         self.s0 = torch.tensor([s0], requires_grad=True)
         self.strike = torch.tensor([strike], device=self.device)
         self.type = option_type
@@ -141,9 +140,10 @@ class Option(GBM):
         
         gamma = phi(d1) / (S * sigma * torch.sqrt(T))
         if print_:
-            print('price: ', price.item())
-            print('Delta: ', delta.item())
-            print('Gamma: ', gamma.item())
+            print('price: {:.3f}'.format(price.item()))
+            print('Delta: {:.3f}'.format(delta.item()))
+            print('Gamma: {:.3f}'.format(gamma.item()))
+
         self.BS_price = price.item()
         if return_delta:
             return delta.item()
